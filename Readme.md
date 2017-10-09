@@ -48,6 +48,26 @@ Recognized types:
 It is case-insensitive. The tense also does not matter.
 So "add" and "added" will be handled equally.
 
+## Usage
+
+Simple usage,
+
+```
+python CreateChangelog.py
+```
+
+Ignore cache,
+
+```
+python CreateChangelog.py --ignore-cache
+```
+
+Limit the number of commits to be used,
+
+```
+python CreateChangelog.py --max 3
+```
+
 ## Cache Support
 
 The script creates a cache which keeps track of the last commit used to create
@@ -64,6 +84,10 @@ You can turn off the cache support by passing in the argument,
 
 You can specify the max number of commits that the script should use to generate
 changelog.
+
+```
+--max=50
+```
 
 ## Future
 
