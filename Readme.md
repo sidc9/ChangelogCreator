@@ -7,46 +7,46 @@ script to parse it successfully.
 
 ## Commit Format
 
-### Compulsory requirement:
-    * The latest commit must end in a version string. A sample version
-    string is given below:
+### Compulsory requirement
+The latest commit must end in a version string. A sample version
+string is given below:
 
-        (v0.10.5)
+(v0.10.5)
 
-    The opening and closing brackets are compulsory, as well as the
-    alphabet 'v'. The actual version string can be anything. So all
-    the following are VALID version strings.
+The opening and closing brackets are compulsory, as well as the
+alphabet 'v'. The actual version string can be anything. So all
+the following are VALID version strings.
 
-        (v0)
-        (v1.1.1.1)
-        (vMyVersion42)
+* (v0)
+* (v1.1.1.1)
+* (vMyVersion42)
 
-### Recommended (non-compulsory) requirement:
-    * Begin each commit with a short string describing the 'type'
-    of commit, followed by a colon. This helps the script in grouping
-    similar commits in the Changelog. For example, bugfixes can be
-    one group, while newly added features can be another.
+### Recommended (non-compulsory) requirement
+Begin each commit with a short string describing the 'type'
+of commit, followed by a colon. This helps the script in grouping
+similar commits in the Changelog. For example, bugfixes can be
+one group, while newly added features can be another.
 
-    The format of the commit type is,
+The format of the commit type is,
 
-        <type>: <message>
+*type*: *message*
 
-        Example:
+Example:
 
-        "added: feature X"
-        "fixed: bug no. 22"
-        "removed: old feature Y"
-        ... and so on.
+* "added: feature X"
+* "fixed: bug no. 22"
+* "removed: old feature Y"
+... and so on.
 
-    Recognized types are:
-        * Add / Added
-        * Removed / Deleted
-        * Fixed / Bugfixed
-        * Changed
-        * Deprecated
+Recognized types:
+* Add / Added
+* Removed / Deleted
+* Fixed / Bugfixed
+* Changed
+* Deprecated
 
-    It is case-insensitive. The tense also does not matter.
-    So "add" and "added" will be handled equally.
+It is case-insensitive. The tense also does not matter.
+So "add" and "added" will be handled equally.
 
 ## Cache Support
 
@@ -56,7 +56,7 @@ overlapping of Changelogs.
 
 You can turn off the cache support by passing in the argument,
 
-```python
+```
 --ignore-cache
 ```
 
