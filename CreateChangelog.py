@@ -30,7 +30,9 @@ class ChangeLogMsg(object):
         self.msg = None
         self.version = None
         self.date = None
-        self.parse_commit_msg(commit.message)
+        self._setType(commit.message)
+        self._setMsg(commit.message)
+        # self.parse_commit_msg(commit.message)
         self._setDate(commit)
 
     def _setDate(self, commit):
@@ -40,16 +42,16 @@ class ChangeLogMsg(object):
     def __str__(self):
         return "Type: {}, Version: {}, Date: {}, Msg: {}".format(self.type, self.version, self.date, self.msg) 
 
-    def parse_commit_msg(self, msg):
-        msg_split = msg.split(":")
-        commitType = ""
-        if len(msg_split)  > 1:
-            commitType = msg_split[0]
-            commitMsg  = msg_split[1]
-        else:
-            commitMsg = msg_split[0]
-        self._setType(commitType)
-        self._setMsg(commitMsg)
+    # def parse_commit_msg(self, msg):
+        # msg_split = msg.split(":")
+        # commitType = ""
+        # if len(msg_split)  > 1:
+        #     commitType = msg_split[0]
+        #     commitMsg  = msg_split[1]
+        # else:
+        #     commitMsg = msg_split[0]
+        # self._setType(commitType)
+        # self._setMsg(commitMsg)
 
     def _setMsg(self, commitMsg):
         commitMsg = commitMsg.rstrip().lstrip()
@@ -62,17 +64,17 @@ class ChangeLogMsg(object):
         else:
             self.msg = commitMsg
 
-    def _setType(self, commitType):
-        commitType = commitType.lower()
-        if commitType.find("add") == 0:
+    def _setType(self, msg):
+        msg = msg.lower()
+        if msg.find("add") == 0:
             self.type = COMMIT_TYPE.ADDED
-        elif commitType.find("remove") == 0 or commitType.find("delete") == 0:
+        elif msg.find("remove") == 0 or msg.find("delete") == 0:
             self.type = COMMIT_TYPE.REMOVED
-        elif commitType.find("fix") == 0 or commitType.find("bugfix") == 0:
+        elif msg.find("fix") == 0 or msg.find("bugfix") == 0:
             self.type = COMMIT_TYPE.FIXED
-        elif commitType.find("change") == 0 and commitType.find("update") == 0:
+        elif msg.find("change") == 0 or msg.find("update") == 0:
             self.type = COMMIT_TYPE.CHANGED
-        elif commitType.find("deprecate") == 0:
+        elif msg.find("deprecate") == 0:
             self.type = COMMIT_TYPE.DEPRECATED
         else:
             self.type = COMMIT_TYPE.OTHERS
@@ -82,8 +84,10 @@ def createChangeLog(changeLogMessages):
         for ver, commitGroup in changeLogMessages:
             f_cl.write("\n## " + ver + ":\n")
             for commitType in commitGroup:
-                if commitType != COMMIT_TYPE.OTHERS:
-                    f_cl.write(" " + commitType.name + ":\n")
+                # if commitType == COMMIT_TYPE.OTHERS:
+                    # f_cl.write("\n\n")
+                # else:
+                f_cl.write("\n " + commitType.name + ":\n")
                 for commitMsg in commitGroup[commitType]:
                     f_cl.write("  * " + commitMsg.msg + "\n")
 
