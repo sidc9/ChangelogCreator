@@ -70,7 +70,7 @@ class ChangeLogMsg(object):
             self.type = COMMIT_TYPE.REMOVED
         elif commitType.find("fix") == 0 or commitType.find("bugfix") == 0:
             self.type = COMMIT_TYPE.FIXED
-        elif commitType.find("change") == 0:
+        elif commitType.find("change") == 0 and commitType.find("update") == 0:
             self.type = COMMIT_TYPE.CHANGED
         elif commitType.find("deprecate") == 0:
             self.type = COMMIT_TYPE.DEPRECATED
