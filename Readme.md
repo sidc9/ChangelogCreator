@@ -23,26 +23,25 @@ the following are VALID version strings.
 
 ### Recommended (non-compulsory) requirement
 Begin each commit with a short string describing the 'type'
-of commit, followed by a colon. This helps the script in grouping
+of commit. This helps the script in grouping
 similar commits in the Changelog. For example, bugfixes can be
 one group, while newly added features can be another.
 
-The format of the commit type is,
-
-*type*: *message*
-
 Example:
+
+*type* *message*
 
 * "added: feature X"
 * "fixed: bug no. 22"
 * "removed: old feature Y"
+
 ... and so on.
 
-Recognized types:
+Recognized words for the Type:
 * Add / Added
 * Removed / Deleted
 * Fixed / Bugfixed
-* Changed
+* Changed / Updated
 * Deprecated
 
 It is case-insensitive. The tense also does not matter.
