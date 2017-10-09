@@ -1,17 +1,31 @@
 
 ## 0.2.1 (2017/10/9):
+
+ CHANGED:
+  * Updated changelog
+  * updated readme for the new format for commit msg
+  * update: removed the need for the colon delimiter in commit msg
+
+## 0.2.1 (2017/10/9):
+
  ADDED:
-  * usage section in readme
-  * gitignore
+  * added: usage section in readme
+  * added: gitignore
 
 ## 0.2.0 (2017/10/9):
+
  ADDED:
-  * changelog
+  * added: changelog
 
 ## 0.1.0 (2017/10/9):
+
  ADDED:
-  * 'Update' will be recognized as part of the group for 'changed'
-  * Improved the readme
+  * Added: 'Update' will be recognized as part of the group for 'changed'
+
+ CHANGED:
+  * Changed: Improved the readme
 
 ## 0.0.0 (2017/10/9):
+
+ OTHERS:
   * Initial commit
