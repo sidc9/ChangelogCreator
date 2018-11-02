@@ -1,31 +1,37 @@
 
-## 0.2.2 (2017/10/9):
+##v1.0.0 (2018/11/2):
+ ADDED:
+  * Added support for git tags, improved grouping of commits
 
+##0.2.2 (2017/10/9):
  CHANGED:
-  * Updated changelog
+  * Updated changelog (v0.2.2)
+
+##untagged (2017/10/9):
+ CHANGED:
   * updated readme for the new format for commit msg
   * update: removed the need for the colon delimiter in commit msg
 
-## 0.2.1 (2017/10/9):
-
+##0.2.1 (2017/10/9):
  ADDED:
-  * added: usage section in readme
+  * added: usage section in readme (v0.2.1)
+
+##untagged (2017/10/9):
+ ADDED:
   * added: gitignore
 
-## 0.2.0 (2017/10/9):
-
+##0.2.0 (2017/10/9):
  ADDED:
-  * added: changelog
+  * added: changelog (v0.2.0)
 
-## 0.1.0 (2017/10/9):
-
+##0.1.0 (2017/10/9):
  ADDED:
-  * Added: 'Update' will be recognized as part of the group for 'changed'
+  * Added: 'Update' will be recognized as part of the group for 'changed' (v0.1.0)
 
+##untagged (2017/10/9):
  CHANGED:
   * Changed: Improved the readme
 
-## 0.0.0 (2017/10/9):
-
- OTHERS:
-  * Initial commit
+##0.0.0 (2017/10/9):
+ UNCATEGORIZED:
+  * Initial commit (v0.0.0)
