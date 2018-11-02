@@ -27,12 +27,12 @@ versions.
 
 ## Categories
     
-    * ADDED
-    * REMOVED
-    * FIXED
-    * CHANGED
-    * DEPRECATED 
-    * IMPROVED
+* ADDED
+* REMOVED
+* FIXED
+* CHANGED
+* DEPRECATED 
+* IMPROVED
 
 The script attempts to categorize a commit based on the commit message. If it
 fails to categorize, it simply puts the commit under UNCATEGORIZED (for 
