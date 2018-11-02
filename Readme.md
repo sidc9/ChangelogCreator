@@ -1,93 +1,57 @@
 # CreateChangelog
 
-A simple script which can create a Changelog from Git commit history.
+As the name suggests, this script creates a Changelog file from git history.
 
-The commit message needs to have follow a specific format for this
-script to parse it successfully.
+The Changelog is organised as follows:
 
-## Commit Format
+        ## version (date):
+          CATEGORY:
+              COMMIT MESSAGE
 
-### Compulsory requirement
-The latest commit must end in a version string. A sample version
-string is given below:
+## Version
 
-(v0.10.5)
+Git tags are used to determine the version. 
 
-The opening and closing brackets are compulsory, as well as the
-alphabet 'v'. The actual version string can be anything. So all
-the following are VALID version strings.
+If tags are unavailable, as a fallback the commit message is searched for version info 
+in the following format
+    
+    (vMAJOR.MINOR.PATCH)
+    (vSomeVersionInfo)
 
-* (v0)
-* (v1.1.1.1)
-* (vMyVersion42)
+As long as the version is within parentheses and starts with 'v', it will be picked up.
 
-### Recommended (non-compulsory) requirement
-Begin each commit with a short string describing the 'type'
-of commit. This helps the script in grouping
-similar commits in the Changelog. For example, bugfixes can be
-one group, while newly added features can be another.
+If that also does not work, then the git SHA hash can be used. By default,
+commits without version info are grouped together under the version 'untagged'.
+If the input argument '--no-group' is passed, then the hashes are used as 
+versions.
 
-Example:
+## Categories
+    
+    * ADDED
+    * REMOVED
+    * FIXED
+    * CHANGED
+    * DEPRECATED 
+    * IMPROVED
 
-*type* *message*
+The script attempts to categorize a commit based on the commit message. If it
+fails to categorize, it simply puts the commit under UNCATEGORIZED (for 
+example, if a commit message contains the word "fixed" it gets categorized
+as FIXED).
 
-* "added: feature X"
-* "fixed: bug no. 22"
-* "removed: old feature Y"
 
-... and so on.
+## Options
 
-Recognized words for the Type:
-* Add / Added
-* Removed / Deleted
-* Fixed / Bugfixed
-* Changed / Updated
-* Deprecated
+`--no-group`
 
-It is case-insensitive. The tense also does not matter.
-So "add" and "added" will be handled equally.
+Commits for which version could not be determined will *not* be grouped together,
+instead their git hash will be used as the version.
 
-## Usage
+`--detail`
 
-Simple usage,
+The git hash of each commit can be included along with the message.
 
-```
-python CreateChangelog.py
-```
+`--max`
 
-Ignore cache,
+The number of commits to use to create the Changelog can be controlled.
 
-```
-python CreateChangelog.py --ignore-cache
-```
-
-Limit the number of commits to be used,
-
-```
-python CreateChangelog.py --max 3
-```
-
-## Cache Support
-
-The script creates a cache which keeps track of the last commit used to create
-a changelog. A new changelog will end just before that commit. This helps prevent
-overlapping of Changelogs.
-
-You can turn off the cache support by passing in the argument,
-
-```
---ignore-cache
-```
-
-## Max commits
-
-You can specify the max number of commits that the script should use to generate
-changelog.
-
-```
---max=50
-```
-
-## Future
-
-Add support to enter date limit for commits to use in Changelog.
