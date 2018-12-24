@@ -3,7 +3,6 @@
 CreateChangelog.py
 
 As the name suggests, this script creates a Changelog file from git history.
-It only works with Git as of now.
 
 The Changelog is organised as follows:
 
@@ -13,7 +12,9 @@ The Changelog is organised as follows:
 
 The categories are ADDED, REMOVED, FIXED, CHANGED, DEPRECATED and IMPROVED.
 The script attempts to categorize a commit based on the commit message. If it
-fails to categorize, it simply puts the commit under UNCATEGORIZED.
+fails to categorize, it simply puts the commit under UNCATEGORIZED (for 
+example, if a commit message contains the word "fixed" it gets categorized
+as FIXED).
 
 Git tags are used to determine the version. If tags are unavailable, the
 commit message is searched for version info in the following format
@@ -45,7 +46,6 @@ from enum import Enum
 import os.path as osp
 from git import Repo
 
-DEBUG = False
 CACHE = "createchangelog.cache"
 
 COMMIT_TYPES = [
@@ -88,7 +88,8 @@ class ChangeLogMsg(object):
         self.date = "{}/{}/{}".format(d.tm_year, d.tm_mon, d.tm_mday)
 
     def __str__(self):
-        return "Type: {}, Version: {}, Date: {}, Msg: {}".format(self.type, self.version, self.date, self.msg) 
+        return "#{} {} {} ({}) [{}]".format(self.signature, self.version, self.msg, self.date, self.type.name)
+        # return "Type: {}, Version: {}, Date: {}, Msg: {}".format(self.type, self.version, self.date, self.msg) 
 
     def _setMsg(self, commitMsg):
         self.msg = commitMsg
@@ -118,8 +119,8 @@ class ChangeLogMsg(object):
         else:
             self.type = COMMIT_TYPE.UNCATEGORIZED
 
-def createChangeLog(changeLogMessages):
-    with open("changelog.txt", "w") as f_cl:
+def createChangeLog(filename, changeLogMessages):
+    with open(filename, "w") as f_cl:
         for group in changeLogMessages:
             f_cl.write("\n##{} ({}):".format(group["version"], group["date"]))
             for commit_type in group["commits"]:
@@ -139,16 +140,21 @@ if __name__ == '__main__':
     parser.add_argument("--max", type=int, help="max commits to use (default: all commits)")
     parser.add_argument("--detailed", action="store_true", help="include commit hashes")
     parser.add_argument("--no-group", action="store_true", help="do not group commits which cannot be described by a tag")
+    parser.add_argument("--verbose", "-v", action="store_true", help="print verbose output")
+    parser.add_argument("--output", "-o", type=str, default="changelog.txt", help="output filename to which changelog will be written")
     args = parser.parse_args()
 
-    heads = repo.heads
-    master = heads.master
+    # heads = repo.heads
+    # master = heads.master
+    current_branch = repo.active_branch
+    if current_branch.name != 'master':
+        print "warning: current branch is {}, not MASTER".format(current_branch.name)
 
     fcommits = []
     if args.max:
-        fcommits = list(repo.iter_commits('master', max_count=args.max))
+        fcommits = list(repo.iter_commits(current_branch.name, max_count=args.max))
     else:
-        fcommits = list(repo.iter_commits('master'))
+        fcommits = list(repo.iter_commits(current_branch.name))
 
     if not validate(fcommits[0]):
         print "Error: Latest commit needs to have version number"
@@ -157,6 +163,9 @@ if __name__ == '__main__':
     changeLogMessages = []
     for commit in fcommits:
         changeLogMsg = ChangeLogMsg(commit)
+
+        if args.verbose:
+            print changeLogMsg
 
         last_elem = {}
         if len(changeLogMessages) != 0:
@@ -184,7 +193,4 @@ if __name__ == '__main__':
             elem["commits"] = {changeLogMsg.type: [changeLogMsg]}
             changeLogMessages.append(elem)
 
-    if DEBUG:
-        print changeLogMessages
-
-    createChangeLog(changeLogMessages)
+    createChangeLog(args.output, changeLogMessages)
