@@ -16,16 +16,10 @@ fails to categorize, it simply puts the commit under UNCATEGORIZED (for
 example, if a commit message contains the word "fixed" it gets categorized
 as FIXED).
 
-Git tags are used to determine the version. If tags are unavailable, the
-commit message is searched for version info in the following format
-    
-    vMAJOR.MINOR.PATCH
+Git tags are used to determine the version.
 
-If that also does not work, then the git SHA hash can be used. By default,
-commits without version info are grouped together under the version 'untagged'.
 If the input argument '--no-group' is passed, then the hashes are used as 
 versions.
-
 
 The git hash of each commit can be included along with the message using the
 option '--detail'.
@@ -54,6 +48,20 @@ COMMIT_TYPES = [
 
 repo = Repo(".")
 args = None
+tagmap = {}
+current_tag = None
+
+def get_tag(hexsha):
+    """ 
+    returns a tag associated with
+    a commit and sets the current_tag
+    to that tag (returns None if there is no tag)
+    """
+    global current_tag
+    tag = tagmap.get(hexsha, None)
+    if tag is not None:
+        current_tag = tag
+    return tag
 
 class COMMIT_TYPE(Enum):
     UNCATEGORIZED     = 0
@@ -67,21 +75,21 @@ class COMMIT_TYPE(Enum):
 class ChangeLogMsg(object):
     def __init__(self, commit):
         self.type = None
-        self.msg = None
         self.version = None
         self.date = None
         self.signature = commit.hexsha[0:8]
-        commitMsg = commit.message.rstrip().lstrip()
-        self._setType(commitMsg)
-        self._setVersion(commit)
-        self._setMsg(commitMsg)
         self._setDate(commit)
+        self.msg = commit.message.rstrip().lstrip()
+        self._setType()
+        self._setVersion(commit.hexsha)
 
-    def _setVersion(self, commit):
-        try:
-            self.version = repo.git.describe(commit.hexsha, abbrev=0)
-        except Exception as err:
-            self._versionParseFallback(commit.message)
+    def _setVersion(self, hexsha):
+        tag = get_tag(hexsha)
+        if tag is None:
+            tag = current_tag
+
+        self.version = tag.name
+
 
     def _setDate(self, commit):
         d = time.gmtime(commit.committed_date)
@@ -89,10 +97,6 @@ class ChangeLogMsg(object):
 
     def __str__(self):
         return "#{} {} {} ({}) [{}]".format(self.signature, self.version, self.msg, self.date, self.type.name)
-        # return "Type: {}, Version: {}, Date: {}, Msg: {}".format(self.type, self.version, self.date, self.msg) 
-
-    def _setMsg(self, commitMsg):
-        self.msg = commitMsg
 
     def _versionParseFallback(self, commitMsg):
         ver = re.search("(.*)\s(\(v.*\))", commitMsg)
@@ -102,8 +106,8 @@ class ChangeLogMsg(object):
             v = v.rstrip().lstrip()
             self.version = v[2:-1]
 
-    def _setType(self, msg):
-        msg = msg.lower()
+    def _setType(self):
+        msg = self.msg.lower()
         if msg.find("add") == 0:
             self.type = COMMIT_TYPE.ADDED
         elif msg.find("remove") == 0 or msg.find("delete") == 0:
@@ -131,10 +135,6 @@ def createChangeLog(filename, changeLogMessages):
                         f_cl.write(" ({})".format(commit.signature))
                     f_cl.write("\n")
 
-def validate(commit):
-    c = ChangeLogMsg(commit)
-    return c.version is not None
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--max", type=int, help="max commits to use (default: all commits)")
@@ -144,8 +144,6 @@ if __name__ == '__main__':
     parser.add_argument("--output", "-o", type=str, default="changelog.txt", help="output filename to which changelog will be written")
     args = parser.parse_args()
 
-    # heads = repo.heads
-    # master = heads.master
     current_branch = repo.active_branch
     if current_branch.name != 'master':
         print "warning: current branch is {}, not MASTER".format(current_branch.name)
@@ -156,8 +154,13 @@ if __name__ == '__main__':
     else:
         fcommits = list(repo.iter_commits(current_branch.name))
 
-    if not validate(fcommits[0]):
-        print "Error: Latest commit needs to have version number"
+    """ store tag info """
+    s = sorted(repo.tags, key=lambda t: t.commit.committed_date, reverse=True)
+    for tag in s:
+        tagmap[tag.commit.hexsha] = tag
+
+    if get_tag(fcommits[0].hexsha) is None:
+        print "error: latest commit needs to be tagged"
         sys.exit(1)
 
     changeLogMessages = []
@@ -171,11 +174,13 @@ if __name__ == '__main__':
         if len(changeLogMessages) != 0:
             last_elem = changeLogMessages[-1]
 
-        if changeLogMsg.version is None:
-            if args.no_group:
-                changeLogMsg.version = changeLogMsg.signature
-            else:
-                changeLogMsg.version = "untagged"
+        # if changeLogMsg.version is None:
+        #     if args.no_group:
+        #         changeLogMsg.version = changeLogMsg.signature
+        #     else:
+        #         changeLogMsg.version = "untagged"
+        if args.no_group:
+            changeLogMsg.version = changeLogMsg.signature
         
         ver = last_elem.get("version", "")
         if ver == changeLogMsg.version:
